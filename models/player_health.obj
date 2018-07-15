@@ -1,0 +1,13 @@
+# Blender v2.79 (sub 0) OBJ File: 'player_health.blend'
+# www.blender.org
+mtllib player_health.mtl
+o Cube.001
+v -0.508900 0.721329 1.442658
+v -0.508900 0.397368 1.442657
+v -0.508900 0.721329 0.000001
+v -0.508900 0.397368 0.000000
+vn -1.0000 0.0000 0.0000
+usemtl None
+s off
+f 1//1 4//1 2//1
+f 1//1 3//1 4//1

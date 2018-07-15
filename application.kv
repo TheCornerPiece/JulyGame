@@ -1,0 +1,432 @@
+#:import main main
+#:import sm kivy.uix.screenmanager
+
+ScreenManager:
+    transition: sm.NoTransition()
+
+    Screen:
+        name: 'menu'
+
+#        Image:
+#            source: None
+
+        Label:
+            text: ''
+            size_hint: (1, .2)
+            pos_hint: {'top': 1}
+            font_size: self.height
+
+        Button:
+            text: 'Play'
+            size_hint: (.4, .2)
+            pos_hint: {'center': (.5, .6)}
+            on_release: app.set_state(main.GAME)
+
+        Button:
+            text: 'Multiplayer'
+            size_hint: (.4, .15)
+            pos_hint: {'center': (.5, .45)}
+            on_release: app.set_state(main.MPLOBBY)
+
+
+        Button:
+            text: 'Editor'
+            size_hint: (.4, .15)
+            pos_hint: {'center': (.25, .2)}
+            on_release: app.set_state(main.EDITOR)
+
+        Button:
+            text: 'Level Select'
+            size_hint: (.4, .15)
+            pos_hint: {'center': (.75, .2)}
+            on_release: app.set_state(main.LEVELS)
+
+    Screen:
+        name: 'lobby'
+
+        Button:
+            text: 'Play'
+            size_hint: (.4, .2)
+            pos_hint: {'center': (.5, .55)}
+            on_release: app.start_multiplayer()
+
+    Screen:
+        name: 'game'
+
+        Label:
+            id: paused_label
+            text: 'paused'
+            pos_hint: {'top':1, 'center_x':.5}
+            size_hint: (1, .2)
+
+        Button:
+            id: restart_button
+            text: 'restart'
+            size_hint: (.2, .1)
+            pos_hint: {'right': .45, 'center_y': .5}
+            on_release: app.level_manager.set_level(-2)
+
+        Button:
+            id: menu_button
+            text: 'menu'
+            size_hint: (.2, .1)
+            pos_hint: {'x': .55, 'center_y': .5}
+            on_release: app.set_state(main.MENU)
+
+        Widget:
+            id: health_bar
+
+            pos_hint: {'top': .99, 'x': .01}
+            size_hint_x: .25
+            size_hint_y: .05
+
+            color: 1, 0, 0, 1
+
+            canvas:
+                Color:
+                    rgba: 1, 1, 1, .5
+                Rectangle:
+                    pos: self.pos
+                    size: root.width * .25, self.height
+                Color:
+                    rgba: self.color
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        Widget:
+            id: powerup_bar
+
+            pos_hint: {'top': .93, 'x': .01}
+            size_hint: (.25, .05)
+
+            color: 1, 0, 0, 1
+
+            canvas:
+                Color:
+                    rgba: 1, 1, 1, .5
+                Rectangle:
+                    pos: self.pos
+                    size: root.width * .25, self.height
+                Color:
+                    rgba: self.color
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+
+        Image:
+            id: goal_indicator
+
+            pos_hint: {'right': .99, 'top': 1}
+            size_hint: (.1, None)
+            height: self.width
+            allow_stretch: True
+            keep_ratio: True
+
+        Widget:
+            id: fade
+
+            canvas:
+                Color:
+                    rgb: 1, 1, 1
+                Rectangle:
+                    pos: self.pos
+                    size: root.size
+
+        Label:
+            id: time_label
+            size_hint: (None, None)
+            pos_hint: {'center_x': .5}
+            size: inch(3.2), inch(1)
+            font_size: self.height * .6
+
+        Label:
+            id: level_record_label
+            size_hint: (None, None)
+            pos_hint: {'right': 1}
+            size: inch(3.2) * .6, inch(1) * .6
+            font_size: self.height * .6
+
+        Label:
+            id: total_time_label
+            color: 1, 0, 0, 1
+            size_hint: (None, None)
+            size: inch(3.2) * .6, inch(1) * .6
+            font_size: self.height * .6
+
+    Screen:
+        name: 'win'
+
+        GridLayout:
+            rows: 1
+            pos_hint: {'top': 1}
+            size_hint: (1, None)
+            height: inch(.5)
+
+            Label:
+                text: 'Level Name'
+                font_size: self.height * .6
+            Label:
+                text: 'Run Time'
+                font_size: self.height * .6
+            Label:
+                text: 'Best Time'
+                font_size: self.height * .6
+
+        ScrollView:
+            size_hint: (1, None)
+            pos: 0, inch(1.2)
+            height: root.height - inch(1.7)
+
+            GridLayout:
+                id: record_grid
+                cols: 1
+
+                size_hint: (1, None)
+                height: len(self.children) * inch(.5)
+
+        Label:
+            id: win_label
+            size_hint: (None, None)
+            size: root.width - inch(2), inch(1.2)
+            font_size: self.height * .6
+
+            canvas.before:
+                Color:
+                    rgb: .2, .2, .3
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+
+        Button:
+            text: 'return'
+            pos_hint: {'right': 1}
+            size_hint: None, None
+            size: inch(2), inch(1.2)
+            on_release: app.return_to_entry()
+
+    Screen:
+        name: 'levels'
+
+        GridLayout:
+            rows: 1
+            pos_hint: {'top': 1}
+            size_hint: (1, None)
+            height: inch(.5)
+
+            ToggleButton:
+                text: 'Normal'
+                group: 's'
+                state: 'down'
+                allow_no_selection: False
+                on_release: app.gui_manager.display_levels(0)
+
+            ToggleButton:
+                text: 'Survival'
+                group: 's'
+                allow_no_selection: False
+                on_release: app.gui_manager.display_levels(1)
+
+
+        GridLayout:
+            rows: 1
+            top: root.height - inch(.5)
+            size_hint: (1, None)
+            height: inch(.5)
+
+            Label:
+                text: 'Level Name'
+                font_size: self.height * .6
+            Label:
+                text: 'Best Time'
+                font_size: self.height * .6
+
+        ScrollView:
+            size_hint: (1, None)
+            pos: 0, inch(1.2)
+            height: root.height - inch(2.2)
+
+            GridLayout:
+                id: level_grid
+                cols: 1
+
+                size_hint: (1, None)
+                height: len(self.children) * inch(.5)
+
+        ToggleButton:
+            id: play_button
+            text: 'play'
+            state: 'down'
+            size_hint: None, None
+            size: inch(2), inch(1.2)
+            group: 'a'
+            allow_no_selection: False
+
+        ToggleButton:
+            text: 'edit'
+            size_hint: None, None
+            x: inch(2)
+            size: inch(2), inch(1.2)
+            group: 'a'
+            allow_no_selection: False
+
+        Button:
+            text: 'menu'
+            pos_hint: {'right': 1}
+            size_hint: None, None
+            size: inch(2), inch(1.2)
+            on_release: app.set_state(main.MENU)
+
+    Screen:
+        name: 'editor'
+
+        Label:
+            id: selection_label
+            text: 'No Selection'
+            pos_hint: {'center_x': .4, 'top': 1}
+            size_hint: (.5, .1)
+            font_size: self.height
+
+        Button:
+            text: 'back'
+            size_hint: (.1, .1)
+            pos_hint: {'top': 1}
+            on_release: app.set_state(main.MENU)
+
+        Button:
+            text: 'save'
+            size_hint: (.1, .1)
+            pos_hint: {'top': .9}
+            on_release: app.editor_manager.save()
+
+        Button:
+            text: 'load'
+            size_hint: (.1, .1)
+            pos_hint: {'top': .8}
+            on_release: app.editor_manager.load()
+
+        Button:
+            text: 'play'
+            size_hint: (.1, .1)
+            pos_hint: {'top': .7}
+            on_release: app.editor_manager.play_level()
+
+        ScrollView:
+            pos_hint: {'right':1}
+            size_hint: (None, 1)
+            width: inch(2)
+
+            GridLayout:
+                cols: 1
+
+                size_hint: (1, None)
+                height: len(self.children) * inch(.5)
+
+                GridLayout:
+                    rows: 1
+
+                    ToggleButton:
+                        text: 'Normal'
+                        state: 'down'
+                        group: 't'
+                        allow_no_selection: False
+                        on_release: app.editor_manager.set_mode(0)
+
+                    ToggleButton:
+                        text: 'Survival'
+                        group: 't'
+                        allow_no_selection: False
+                        on_release: app.editor_manager.set_mode(1)
+
+                TextInput:
+                    id: level_name
+                    hint_text: 'level name'
+                    height: inch(.5)
+                    multiline: False
+                    on_text_validate: app.editor_manager.set_level_name(self.text)
+                TextInput:
+                    id: first_attr
+                    hint_text: 'data[0]'
+                    height: inch(.5)
+                    multiline: False
+                TextInput:
+                    id: y_pos
+                    hint_text: 'y pos'
+                    height: inch(.5)
+                    multiline: False
+                TextInput:
+                    id: angle
+                    hint_text: 'angle'
+                    height: inch(.5)
+                    multiline: False
+                EditorButton:
+                    text: 'buildings'
+                EditorButton:
+                    text: 'platforms'
+                EditorButton:
+                    text: 'spawn_pos'
+                EditorButton:
+                    text: 'goal_pos'
+                EditorButton:
+                    text: 'powerups'
+                EditorButton:
+                    text: 'elevators'
+                EditorButton:
+                    text: 'vehicles'
+                EditorButton:
+                    text: 'enemies'
+
+<EditorObject>:
+    color: 1, 1, 1, 1
+    canvas:
+        Rectangle:
+            size: self.size
+            pos: self.x - self.size[0] * .5, self.y - self.size[1] * .5
+
+<LevelResult>:
+    rows: 1
+
+    canvas.before:
+        Color:
+            rgba: self.color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    Label:
+        id: level_name
+        font_size: self.height * .6
+    Label:
+        id: run_time
+        font_size: self.height * .6
+    Label:
+        id: best_time
+        font_size: self.height * .6
+
+<LevelSelection>:
+    rows: 1
+
+    canvas.before:
+        Color:
+            rgba: self.color
+        Rectangle:
+            size: self.size
+            pos: self.pos
+
+    Label:
+        id: level_name
+        font_size: self.height * .6
+    Label:
+        id: best_time
+        font_size: self.height * .6
+
+<Button>:
+    font_size: self.height * .6
+
+    background_down: 'textures/button_normal.png'
+    background_normal: 'textures/button_down.png'
+
+    color: 1, 0, 0, 1
+
+
+
